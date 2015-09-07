@@ -1,0 +1,15 @@
+language: php
+php: 5.3
+env:
+  - PNAME='ci-test'
+  - PSITE='dev'
+  - PUUID='dev.1c4f4194-5cdb-417a-973a-3172b77cfc8d'
+  - PSOURCE='dev'
+install:
+  - composer global require drush/drush:6.2.0
+before_script
+  - drush psite-ecreate $PUUID $PSITE --source=$PSOURCE
+script:
+  - drush @pantheon.$PNAME.$PSITE test-run MySimpleTestClass --strict=0
+after_script:
+  - drush psite-edelete $PUUID $PSITE -y
