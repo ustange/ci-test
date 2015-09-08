@@ -212,20 +212,7 @@
  *   );
  * @endcode
  */
-// Local development configuration.
-// see https://pantheon.io/docs/articles/drupal/configuring-settings-php
-if (!defined('PANTHEON_ENVIRONMENT')) {
-  // Database.
-  $databases['default']['default'] = array(
-    'database' => '…',
-    'username' => '…',
-    'password' => '…',
-    'host' => 'localhost',
-    'driver' => 'mysql',
-    'port' => 3306,
-    'prefix' => '',
-  );
-}
+
 
 /**
  * Access control for update.php script.
@@ -587,4 +574,3 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
  * the leading hash sign below.
  */
 # $conf['pressflow_smart_start'] = TRUE;
-
