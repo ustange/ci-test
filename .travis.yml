@@ -50,25 +50,47 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
   - git checkout -b $PSITE
   - git remote add pantheon ssh://codeserver.dev.$PUUID@codeserver.dev.$PUUID.drush.in:2222/~/repository.git
+  # Need to add a settings.php so that drush commands will work on Pantheon
+  - touch sites/default/settings.php
+  - git add --all
+  - git commit -am "Adding a settings.php"
   - git push --force pantheon $PSITE
+  # Create a new Pantheon environment using the above branch.
   - drush psite-ecreate $PUUID $PSITE --source=$PSOURCE || true
   # Update our drush aliases file.
   - drush paliases
   - drush cc drush
   # Note that all subsequent drush commands must be run out of our drupal root.
+  # I.e. we cannot be in a Drupal directory to run aliased drush commands.
   - cd $HOME
+  # When new modules are added to the codebase, updb can sometimes fail (thus
+  # causing a failed build) because the system table and modules are out of
+  # sync. We get around this by clearing all caches before attempting anything.
+  # The "|| true" works around issues where Views and Block conflict during
+  # cache clears / block rehashes.
+  - drush @pantheon.$PNAME.$PSITE cc all --strict=0 || true
+
   # We can test deployments by running drush updb.
+  # Run all available updates as if deploying. For now, append the
+  # --strict=0 option for Drush 6.x compatibility on Pantheon.
   - drush @pantheon.$PNAME.$PSITE updb -y --strict=0
-  # Here, we can enable test dependencies, for example, SimpleTest.
+
+  # Enable additional test dependencies here, like SimpleTest.
   - drush @pantheon.$PNAME.$PSITE en simpletest -y --strict=0
-  - drush @pantheon.$PNAME.$PSITE en helloworld -y --strict=0
+
+  # If you're using SimpleTest, you'll want to disable verbose logging. This
+  # ensures no false build failures from file write errors.
   - drush @pantheon.$PNAME.$PSITE vset -y simpletest_verbose 0 --strict=0
+  - drush @pantheon.$PNAME.$PSITE en helloworld -y --strict=0
 script:
-  # Run real / additional tests here.
+  # This is where you run your tests, be they SimpleTest, Casper, Behat,
+  # or otherwise. Here's a SimpleTest example. I've found that drush
+  # likes to exit with odd codes if you run multiple classes at once.
+  # You may have to run one class at a time.
+  - drush @pantheon.$PNAME.$PSITE sql-connect
   - drush @pantheon.$PNAME.$PSITE test-run HelloworldTests --strict=0
 after_script:
-  # Destroy the Pantheon environment
+  # Destroy the Pantheon environment.
   - drush psite-edelete $PUUID $PSITE -y
   # Delete the git branch we created.
-  - cd $TRAVIS_BUILD_DIR
-  - git push pantheon :$PSITE
+  - cd $TRAVIS_BUILD_DIR; git push pantheon :$PSITE
