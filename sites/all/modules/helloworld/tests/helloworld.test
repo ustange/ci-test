@@ -19,15 +19,18 @@ class HelloworldTests extends DrupalWebTestCase {
     );
   }
 
+
   /**
-   * Override the setUp() method and force SimpleTest into using the existing
-   * database instead of setting up a dummy.
+   * Perform any setup tasks for our test case.
    */
   public function setUp() {
-    $this->setup = TRUE;
-    $this->public_files_directory = $this->originalFileDirectory .
-      '/simpletest/' . substr($this->databasePrefix, 10);
+    // Override the setUp() method and force SimpleTest into using the existing
+    // database instead of setting up a dummy.
+    // $this->setup = TRUE;
+    // $this->public_files_directory = $this->originalFileDirectory . '/simpletest/' . substr($this->databasePrefix, 10);
+    parent::setUp(array('helloworld'));
   }
+
 
   public function testHelloWorld() {
     // Navigate to /helloworld.
