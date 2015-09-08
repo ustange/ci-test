@@ -61,10 +61,11 @@ before_script:
   - drush @pantheon.$PNAME.$PSITE updb -y --strict=0
   # Here, we can enable test dependencies, for example, SimpleTest.
   - drush @pantheon.$PNAME.$PSITE en simpletest -y --strict=0
+  - drush @pantheon.$PNAME.$PSITE en helloworld -y --strict=0
   - drush @pantheon.$PNAME.$PSITE vset -y simpletest_verbose 0 --strict=0
 script:
   # Run real / additional tests here.
-  - drush @pantheon.$PNAME.$PSITE test-run MyTestClass --strict=0
+  - drush @pantheon.$PNAME.$PSITE test-run HelloworldTests --strict=0
 after_script:
   # Destroy the Pantheon environment
   - drush psite-edelete $PUUID $PSITE -y

@@ -1,0 +1,38 @@
+<?php
+/**
+ * @file
+ * Tests for the hello world module.
+ */
+class HelloworldTests extends DrupalWebTestCase {
+  /**
+   * Metadata about our test case.
+   */
+  public static function getInfo() {
+    return array(
+      // The human readable name of the test case.
+      'name' => 'Hello World',
+      // A short description of the tests this case performs.
+      'description' => 'Tests for the Hello World module.',
+      // The group that this case belongs too, used for grouping tests together
+      // in the UI.
+      'group' => 'Hello World Group',
+    );
+  }
+
+  /**
+   * Override the setUp() method and force SimpleTest into using the existing
+   * database instead of setting up a dummy.
+   */
+  public function setUp() {
+    $this->setup = TRUE;
+    $this->public_files_directory = $this->originalFileDirectory .
+      '/simpletest/' . substr($this->databasePrefix, 10);
+  }
+
+  public function testHelloWorld() {
+    // Navigate to /helloworld.
+    $this->drupalGet('helloworld');
+    // Verify that the text "Hello World ...", exists on the page.
+    $this->assertText('Hello World. Welcome to Drupal.', 'The page content is present.');
+  }
+}
