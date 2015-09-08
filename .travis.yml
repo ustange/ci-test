@@ -1,4 +1,6 @@
 language: php
+# Keep in mind: Is Drupal installed?
+# -> visit the site
 php: 5.3
 # Multidev environments are branch-based, but in this scenario, only GitHub and Travis know of the new code we're testing. Consequently, we'll need to push code from Travis' build server back up to Pantheon. To do so, you must do the following:
 # Generate a new, password-less SSH key.
@@ -87,7 +89,7 @@ script:
   # or otherwise. Here's a SimpleTest example. I've found that drush
   # likes to exit with odd codes if you run multiple classes at once.
   # You may have to run one class at a time.
-  - drush @pantheon.$PNAME.$PSITE sql-connect
+  # - drush @pantheon.$PNAME.$PSITE sql-connect
   - drush @pantheon.$PNAME.$PSITE test-run HelloworldTests --strict=0
 after_script:
   # Destroy the Pantheon environment.
