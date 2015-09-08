@@ -51,9 +51,9 @@ before_script:
   - git checkout -b $PSITE
   - git remote add pantheon ssh://codeserver.dev.$PUUID@codeserver.dev.$PUUID.drush.in:2222/~/repository.git
   # Need to add a settings.php so that drush commands will work on Pantheon
-  - touch sites/default/settings.php
-  - git add --all
-  - git commit -am "Adding a settings.php"
+  # - touch sites/default/settings.php
+  # - git add --all
+  # - git commit -am "Adding a settings.php"
   - git push --force pantheon $PSITE
   # Create a new Pantheon environment using the above branch.
   - drush psite-ecreate $PUUID $PSITE --source=$PSOURCE || true
