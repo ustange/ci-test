@@ -84,6 +84,7 @@ before_script:
   # ensures no false build failures from file write errors.
   - drush @pantheon.$PNAME.$PSITE vset -y simpletest_verbose 0 --strict=0
   - drush @pantheon.$PNAME.$PSITE en helloworld -y --strict=0
+  - drush @pantheon.$PNAME.$PSITE cc all --strict=0 || true
 script:
   # This is where you run your tests, be they SimpleTest, Casper, Behat,
   # or otherwise. Here's a SimpleTest example. I've found that drush
