@@ -1,15 +1,73 @@
 language: php
 php: 5.3
+# Multidev environments are branch-based, but in this scenario, only GitHub and Travis know of the new code we're testing. Consequently, we'll need to push code from Travis' build server back up to Pantheon. To do so, you must do the following:
+# Generate a new, password-less SSH key.
+# - add it to the Pantheon user's account (or create a new account)
+# - also add it to a GitHub account with read access to the repo
+# - add a base64-encoded version of the private key to .travis.yml with key "source_key"
+# 	openssl base64 -in /Users/uwestange/.ssh/travis-ci-key.pub
+source_key: "c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCQVFEb3JvdlZYRDdQd0tCY0dxUGc2UlBWVHZWRmoxWTBvRDBXWTZZNFFsNHpRaVJFVWJpNWl3ZGVDVG9LL1JSa0NEby9XTHRBM0cvMGxXdW56WkpQa0Z4ZXVjM3VVN3g1TTh1RHp0WUFsUExSYVFyRVdTb2hIWllHWm0wTDJLVGdtSlYyNlZ3b3VnM3ZUQ05UMy9aSCsyMXRmaE1XSkN0NFRmRDJjYjBINWlsV3JSRGg4Q3kvaWpwam81cHVGY2ZCNDVLTFY2VXhncG9oSHdTV3pWOTdqWVVnQ2k2aC85VEpSdmNmbFRkNUQxYVpsbjNITmEzbzJOYnFpdnZlTXlnVlVkVlAyNVFWVXd1QzZ0ZTkvcDkzZ21YSS9iMmNYVEtSRE5FNXE1K3VqTDdINldTNzdhUy9NLy9OSWVpQjJxUVZxdHhGbUtDMEJhcDFsT0NVYXE1U3VIcnAgdHJhdmlzLWNpLWtleQo="
 env:
-  - PNAME='ci-test'
-  - PSITE='ci-test'
-  - PUUID='dev.1c4f4194-5cdb-417a-973a-3172b77cfc8d'
-  - PSOURCE='test'
+  global:
+    # That random string in the URL when accessing your site's dashboard.
+    - PUUID='1c4f4194-5cdb-417a-973a-3172b77cfc8d'
+    # The site name (e.g. live-sitename.gotpantheon.com).
+    - PNAME='ci-test'
+    # The environment from which DB/files will be cloned.
+    - PSOURCE='dev'
+    # The authentication details for a Pantheon account with access to the site.
+    # Do not keep credentials in plain text in your repo, even if it's private!
+    # Use the Travis CLI to encrypt those values:
+    # 	travis encrypt "PEMAIL='uwe.stange@gmail.com'"
+    # Which will produce output like this:
+    # 	secure: "22Yl4nERjtJPoinwa234"
+    # 
+    # - PEMAIL='your-account@example.com'
+    - secure: "VDqB/7FfJ29VmJdtz+okUzVdyGnBXDNNomUD/k0UQX9gJIowLHlaafEP1xZS1vNo255C6/K7JVShZYhlh34ZXtDeZEmDD9Nw5S2mTc6PZTGhqMshyOSjjHGZ3SjJk2C8zd30dA/o6V+fCFlGr6QUdv6JWAcuDBL1OxfTwna+vMJcJkZ1mKAbO89OJmOdHfNwKIQjPQ/5XBomaZJZFcPGxlgdRkUTczNn9gWVwNsxa0Mn42r4H6krh6NQvWY90CwmOqpoqnErcDz2O7GV8u04ceP35XRgKKe/NqECc4+6qQCFyqcvVBIs2AZDOM0I577/nMEOyrttTLQrXV7C/yqekDAEO9a4ENecCmENw2GFDm9LvoSx5/6lFLwXZEubizrBlM5niVFx75tLv1EvZ5CAzJX2DPUVK8Gzd6C10wNNXDvKtc3F2yNt4sPaY5pYA569c/9siy6xGQMsLSCVeWJC4kGZOcDk0XgnSDLvmdYnJhNKicbhitjyfHMXBgaR8AWfQU0k7RyEGWighwMp05Ggl+Okth5fywLFAVhcaW3lC/TFVwyIXM6N5r2NbiYqIrCQgfPGsGXG6ubrdt44YSbkHsNfuLCM5RkfE19AMzdAj3TOmZYnEoVO7StyaaQa+1teNBWUMECfz1M6KJWgyc9gDryUeEBaCQbYdXEQzSCY/+8="
+    # - PPASS='your-account-password'
+    - secure: "R6XcZzPVK28TO/VqQ4ZfIpXE2DV7hogRMYZmgo0gQ2mVIFoQFZz/Lhin3bpDxe8cYLJtNxVnqa5Ifpo/KEGbkVgprx7b3Gl0+Cc3zuKE7T191AX5B1kwVBwuGIeExTHHxlo6DhOF0+XfNXYAsTq+VyYmPOPGGnPjdZIWxcLEnx0nmiLFCFad3es2GaekBOPdBBqC8y795nEAytFUCVgKeCuZmTakHJrixL3VlayYN4qFuTYxpY6wlVcxxDFwkj6l7PZWn+K7qTgxTapsPxs4XuDrcd2MyuJgxqZVUvWcJU7QFdGaw2s2MC0HjD2wHSq54JfE7FesdkldSbTlXdP3Wt6ujgvsntKIU6L3+wdsKEwXrlePUmsoqYSnILcIGbsul+oxBBZfts05CaZQ08bXN4jz9Cdw3vE4kPvPwQkgSj9tF8AFVfP/EX0MpZ8bblVYa0nxmQkFzLbotbHZ4gw1pY52JgD/YbejKd3CXBY5pGxanq/3f7VH1KnevYgF8jX7xjE7wF/sYTR6/yh0F3dth2jE99hjTnQaw5lm2vR9EMByVoZy+lfeu+qstAKVYUo3aRvL/zAB4x1WiF/YWnX+KIpFv9TE9TJVDHcbNXWn+s79U/utDShG0UDGl7NkCo8aC69FSLCB9mRRlcDzXOkUKCV5OnVcSzeLs2j/P4H1+Ho="
+    # Note, the total length of PSITE cannot exceed 11 characters (currently).
+    - PSITE=$(cat /dev/urandom | tr -cd 'a-z0-9' | head -c 4)
+    - PSITE="ci$TRAVIS_BUILD_NUMBER-$PSITE"
+    # The host against which the build will be run.
+    - PHOST="https://$PSITE-$PNAME.gotpantheon.com"
 install:
+  # Ensure the build doesn't get hung up on adding unknown hosts.
+  - echo "StrictHostKeyChecking no" > ~/.ssh/config
+  # Install drush.
   - composer global require drush/drush:6.2.0
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  # Install terminus.
+  - git clone https://github.com/pantheon-systems/terminus.git $HOME/.drush/terminus
+  - cd $HOME/.drush/terminus
+  - composer update --no-dev
+  - drush cc drush
+  # Install additional test dependencies here (like Casper, Behat, etc).
 before_script:
-  - drush psite-ecreate $PUUID $PSITE --source=$PSOURCE
+  # Authenticate with Pantheon via Terminus.
+  - drush pauth $PEMAIL --password=$PPASS
+  # Add Pantheon as a git remote, push to it, and create the environment.
+  - cd $TRAVIS_BUILD_DIR
+  - git checkout -b $PSITE
+  - git remote add pantheon ssh://codeserver.dev.$PUUID@codeserver.dev.$PUUID.drush.in:2222/~/repository.git
+  - git push --force pantheon $PSITE
+  - drush psite-ecreate $PUUID $PSITE --source=$PSOURCE || true
+  # Update our drush aliases file.
+  - drush paliases
+  - drush cc drush
+  # Note that all subsequent drush commands must be run out of our drupal root.
+  - cd $HOME
+  # We can test deployments by running drush updb.
+  - drush @pantheon.$PNAME.$PSITE updb -y --strict=0
+  # Here, we can enable test dependencies, for example, SimpleTest.
+  - drush @pantheon.$PNAME.$PSITE en simpletest -y --strict=0
+  - drush @pantheon.$PNAME.$PSITE vset -y simpletest_verbose 0 --strict=0
 script:
-  - drush @pantheon.$PNAME.$PSITE test-run MySimpleTestClass --strict=0
+  # Run real / additional tests here.
+  - drush @pantheon.$PNAME.$PSITE test-run MyTestClass --strict=0
 after_script:
+  # Destroy the Pantheon environment
   - drush psite-edelete $PUUID $PSITE -y
+  # Delete the git branch we created.
+  - cd $TRAVIS_BUILD_DIR
+  - git push pantheon :$PSITE
